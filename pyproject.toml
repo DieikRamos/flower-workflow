@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "package-python-api-flow"
+version = "0.1.0"
+description = "Package to enable to define flows to fetch and transform data"
+authors = ["Dieik Ramos <dieik.ramos@syngenta.com>"]
+readme = "README.md"
+packages = [{include = "package_python_api_flow"}]
+
+[tool.poetry.dependencies]
+python = "ˆ3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
