@@ -7,7 +7,9 @@ readme = "README.md"
 packages = [{include = "package_python_api_flow"}]
 
 [tool.poetry.dependencies]
-python = "ˆ3.10"
+python = "^3.10"
+pyyaml = "^6.0"
+pydantic = "^1.10.8"
 
 
 [build-system]
