@@ -12,6 +12,11 @@ pyyaml = "^6.0"
 pydantic = "^1.10.8"
 
 
+[tool.poetry.group.dev.dependencies]
+requests = "^2.31.0"
+fastapi = "^0.95.2"
+uvicorn = "^0.22.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

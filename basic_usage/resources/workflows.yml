@@ -1,9 +1,0 @@
-workflows:
-  test_work_flow:
-    steps:
-      - action: print_message
-        params:
-          message: "Hello World!"
-      - action: print_message
-        params:
-          message: "Goodbye World!"

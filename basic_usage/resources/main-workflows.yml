@@ -1,0 +1,31 @@
+context:
+  base_url: "https://api.staging.beta.base.strider.ag"
+
+workflows:
+  field_summary_flow:
+    params:
+      field_id: str
+      authorization: str
+    steps:
+      field_info:
+        action: get_field_by_id
+        params:
+          field_id: params["field_id"]
+          authorization: params["authorization"]
+      season_fields:
+        action: get_season_fields
+        params:
+          field_id: params["field_id"]
+          authorization: params["authorization"]
+      current_season:
+        action: get_field_current_season
+        params:
+          field_id: params["field_id"]
+          authorization: params["authorization"]
+      output:
+        action: basic_mapping
+        depends: [field_info, season_fields, current_season]
+        params:
+          field_info: context["field_info"]
+          season_fields: context["season_fields"]["content"]
+          current_season: context["current_season"]
