@@ -12,13 +12,13 @@ workflows:
         params:
           field_id: params["field_id"]
           authorization: params["authorization"]
-      season_fields:
-        action: get_season_fields
+      current_season:
+        action: get_field_current_season
         params:
           field_id: params["field_id"]
           authorization: params["authorization"]
-      current_season:
-        action: get_field_current_season
+      season_fields:
+        action: get_season_fields
         params:
           field_id: params["field_id"]
           authorization: params["authorization"]
@@ -27,5 +27,6 @@ workflows:
         depends: [field_info, season_fields, current_season]
         params:
           field_info: context["field_info"]
-          season_fields: context["season_fields"]["content"]
           current_season: context["current_season"]
+          current_season_field: |
+            [item for item in context["season_fields"]["content"] if item["season_id"] == context["current_season"]["id"]][0]
