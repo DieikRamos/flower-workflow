@@ -7,8 +7,8 @@ workflows:
       field_id: str
       authorization: str
     steps:
-      request_http:
-        action: request_http
+      http_request:
+        action: http_request
         params:
           method: "GET"
           path: /v2/fields/{field_id}
@@ -22,8 +22,8 @@ workflows:
       field_id: str
       authorization: str
     steps:
-      request_http:
-        action: request_http
+      http_request:
+        action: http_request
         params:
           method: "GET"
           path: /v2/fields/{field_id}/season-fields
@@ -37,8 +37,8 @@ workflows:
       field_id: str
       authorization: str
     steps:
-      request_http:
-        action: request_http
+      http_request:
+        action: http_request
         params:
           method: "GET"
           path: /v2/fields/{field_id}/current-season

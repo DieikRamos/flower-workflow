@@ -2,14 +2,14 @@ from typing import List
 
 
 from flower.models.protocols import ActionProtocol
-from flower.core.flow_runner import FlowerRunner
+from flower.core.runner import FlowerRunner
 from flower.core.functions import load_schema
 from flower.models.core import Schema
-from flower.actions.request_http import RequestHttp
+from flower.actions.http_request import HttpRequest
 from flower.actions.mapping import BasicMapping
 
 default_actions = {
-    "request_http": RequestHttp(),
+    "http_request": HttpRequest(),
     "basic_mapping": BasicMapping()
 }
 

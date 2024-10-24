@@ -4,12 +4,11 @@ version = "0.1.0"
 description = "Package to enable to define flows to fetch and transform data"
 authors = ["Dieik Ramos <dieik.ramos@syngenta.com>"]
 readme = "README.md"
-packages = [{include = "package_python_api_flow"}]
+packages = [{include = "flower"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
 pyyaml = "^6.0"
-pydantic = "^1.10.8"
 
 
 [tool.poetry.group.dev.dependencies]
