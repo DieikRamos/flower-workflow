@@ -6,11 +6,12 @@ from flower.core.runner import FlowerRunner
 from flower.core.functions import load_schema
 from flower.models.core import Schema
 from flower.actions.http_request import HttpRequest
-from flower.actions.mapping import BasicMapping
+from flower.actions.mapping import BasicMapping, ListMapping
 
 default_actions = {
     "http_request": HttpRequest(),
-    "basic_mapping": BasicMapping()
+    "basic_mapping": BasicMapping(),
+    "list_mapping": ListMapping()
 }
 
 

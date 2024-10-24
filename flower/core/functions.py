@@ -27,19 +27,23 @@ def merge_dicts(dict1, dict2):
             yield (k, dict2[k])
 
 
-def parse_params(action_params: dict, context: dict, params: dict):
-    parsed_params = dict()
+def eval_param(expression: str, params: dict, context: dict):
     eval_context = {
         "context": context,
         "params": params
     }
+    return eval(expression, eval_context)
+
+
+def parse_params(action_params: dict, context: dict, params: dict):
+    parsed_params = dict()
     for key, value in action_params.items():
         if isinstance(value, dict) and "expression" not in value:
             parsed_params[key] = parse_params(value, context, params)
         else:
             try:
                 expression = value.get("expression") if isinstance(value, dict) else value
-                parsed_params[key] = eval(expression, eval_context)
+                parsed_params[key] = eval_param(expression, params, context)
             except Exception as _:
                 parsed_params[key] = value.get("fallback_value") if isinstance(value, dict) else value
 

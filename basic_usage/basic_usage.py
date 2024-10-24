@@ -14,14 +14,14 @@ flower = Flower(schema_files, actions=actions)
 app = FastAPI()
 
 
-@app.get("/field-summary/{field_id}")
-def call_workflow(field_id: str, authorization: str = Header(alias="Authorization")):
+@app.get("/author_summary/{author_key}")
+def call_workflow(author_key: str, authorization: str = Header(alias="Authorization")):
     context = {
-        "field_id": field_id,
+        "author_key": author_key,
         "authorization": authorization
     }
 
-    result = flower.run("field_summary_flow", context)
+    result = flower.run("author_summary", context)
 
     return result
 

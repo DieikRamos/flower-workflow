@@ -1,34 +1,39 @@
 context:
-  base_url: "https://api.staging.beta.base.strider.ag"
+  base_url: "https://openlibrary.org"
 
 workflows:
-  field_summary_flow:
+  author_summary:
     params:
-      field_id: str
+      author_key: str
       authorization: str
     steps:
-      field_info:
-        action: get_field_by_id
+      author_info:
+        action: get_author_by_key
         params:
-          field_id: params["field_id"]
+          author_key: params["author_key"]
           authorization: params["authorization"]
-      current_season:
-        action: get_field_current_season
+      author_books:
+        action: get_books_by_author
         params:
-          field_id: params["field_id"]
+          field_id: params["author_key"]
           authorization: params["authorization"]
-      season_fields:
-        action: get_season_fields
+
+      map_books:
+        action: list_mapping
+        depends: [author_books]
         params:
-          field_id: params["field_id"]
-          authorization: params["authorization"]
+          input: context["author_books"].get("docs")
+          filter: params.get("first_publish_year") is not None
+          output:
+            title: params.get("title")
+            publish_year: params.get("first_publish_year")
+            editions: params.get("edition_count")
+
       output:
         action: basic_mapping
-        depends: [field_info, season_fields, current_season]
+        depends: [author_info, map_books]
         params:
-          field_info: context["field_info"]
-          current_season: context["current_season"]
-          current_season_field:
-            expression: | 
-              [item for item in context["season_fields"]["content"] if item.get("season_id") == context.get("current_season", {}).get("id")][0]
-            fallback_value: null
+          author:
+            key: context["author_info"].get("key")
+            name: context["author_info"].get("name")
+          books: context["map_books"]

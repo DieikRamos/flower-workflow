@@ -37,7 +37,10 @@ class FlowerRunner:
         action = self.schema.actions.get(step.action)
 
         if action:
-            parsed_params = parse_params(action_params=step.params, context=context, params=workflow_params)
+            if action.should_parse_params:
+                parsed_params = parse_params(action_params=step.params, context=context, params=workflow_params)
+            else:
+                parsed_params = step.params
 
             output["output"] = context[key] = action(
                 context=context, workflow_context=workflow_params, params=parsed_params

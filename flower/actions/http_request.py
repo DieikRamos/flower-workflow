@@ -25,10 +25,12 @@ class RequestParams:
         self.headers = headers or {}
         self.query_params = query_params or {}
         self.path_params = path_params or {}
-        self.payload = payload or {}
+        self.payload = payload or None
 
 
 class HttpRequest(ActionProtocol):
+    should_parse_params = True
+
     def __call__(self, context, workflow_context, params):
         params["base_url"] = context["base_url"]
         request_params = RequestParams(**params)
