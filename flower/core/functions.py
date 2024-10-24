@@ -25,10 +25,7 @@ def merge_dicts(dict1, dict2):
 
 
 def eval_param(expression: str, params: dict, context: dict):
-    eval_context = {
-        "context": context,
-        "params": params
-    }
+    eval_context = {"context": context, "params": params}
     return eval(expression, eval_context)
 
 

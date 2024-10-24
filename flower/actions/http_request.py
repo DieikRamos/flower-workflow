@@ -16,8 +16,14 @@ class RequestParams:
     payload: Optional[dict]
 
     def __init__(
-            self, base_url: str, path: str, method: str, headers: Optional[dict] = None,
-            query_params: Optional[dict] = None, path_params: Optional[dict] = None, payload: Optional[dict] = None
+        self,
+        base_url: str,
+        path: str,
+        method: str,
+        headers: Optional[dict] = None,
+        query_params: Optional[dict] = None,
+        path_params: Optional[dict] = None,
+        payload: Optional[dict] = None,
     ):
         self.base_url = base_url
         self.path = path
@@ -43,7 +49,7 @@ class HttpRequest(ActionProtocol):
             method=request_params.method,
             headers=request_params.headers,
             params=request_params.query_params,
-            json=request_params.payload
+            json=request_params.payload,
         )
 
         print("[END] Requesting URL: ", final_url)

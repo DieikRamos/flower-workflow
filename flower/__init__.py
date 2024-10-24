@@ -8,11 +8,7 @@ from flower.models.core import Schema
 from flower.actions.http_request import HttpRequest
 from flower.actions.mapping import BasicMapping, ListMapping
 
-default_actions = {
-    "http_request": HttpRequest(),
-    "basic_mapping": BasicMapping(),
-    "list_mapping": ListMapping()
-}
+default_actions = {"http_request": HttpRequest(), "basic_mapping": BasicMapping(), "list_mapping": ListMapping()}
 
 
 class Flower:
