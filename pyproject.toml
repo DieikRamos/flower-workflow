@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "package-python-api-flow"
+name = "flower-workflow-engine"
 version = "0.1.0"
 description = "Package to enable to define flows to fetch and transform data"
-authors = ["Dieik Ramos <dieik.ramos@syngenta.com>"]
+authors = ["Dieik Ramos <dieik95@gmail.com>"]
 readme = "README.md"
 packages = [{include = "flower"}]
 
