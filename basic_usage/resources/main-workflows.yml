@@ -28,5 +28,7 @@ workflows:
         params:
           field_info: context["field_info"]
           current_season: context["current_season"]
-          current_season_field: |
-            [item for item in context["season_fields"]["content"] if item["season_id"] == context["current_season"]["id"]][0]
+          current_season_field:
+            expression: | 
+              [item for item in context["season_fields"]["content"] if item.get("season_id") == context.get("current_season", {}).get("id")][0]
+            fallback_value: null

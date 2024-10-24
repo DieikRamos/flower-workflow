@@ -34,4 +34,9 @@ class RequestHttp(ActionProtocol):
 
         print("[END] Requesting URL: ", final_url)
 
-        return response.json()
+        response.raise_for_status()
+
+        if response.content:
+            return response.json()
+        else:
+            return None

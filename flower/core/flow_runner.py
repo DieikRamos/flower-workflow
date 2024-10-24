@@ -15,36 +15,37 @@ class FlowerRunner:
         workflow_params = self.params
         workflow_definition = self.schema.workflows.get(self.workflow)
 
-        result = {}
+        output = {}
         executed_steps = []
-        pending_steps = [item for item in workflow_definition.steps.items()]
+        pending_steps = list(workflow_definition.steps.items())
 
-        while len(pending_steps) > 0:
-            steps_to_call = []
+        while pending_steps:
+            current_steps = []
             for key, step in pending_steps:
-                if step.depends is None or all([item in executed_steps for item in step.depends]):
-                    steps_to_call.append((key, step))
+                if step.depends is None or all(item in executed_steps for item in step.depends):
+                    current_steps.append((key, step))
 
-            pending_steps = [item for item in pending_steps if item not in steps_to_call]
-            args = [(step, context, workflow_params, key, result) for key, step in steps_to_call]
+            pending_steps = [item for item in pending_steps if item not in current_steps]
+            args = [(key, step, context, workflow_params, output) for key, step in current_steps]
 
-            execute(lambda x: self.run_step(*x), args)
-            executed_steps.extend([key for key, step in steps_to_call])
+            execute(lambda a: self.__run_step(*a), args)
+            executed_steps.extend(key for key, step in current_steps)
 
-        return result["output"]
+        return output.get("output")
 
-    def run_step(self, step, context, workflow_params, key, result):
+    def __run_step(self, key, step, context, workflow_params, output):
         action = self.schema.actions.get(step.action)
 
         if action:
-            parsed_params = parse_params(action_params=step.params,context=context, params=workflow_params)
+            parsed_params = parse_params(action_params=step.params, context=context, params=workflow_params)
 
-            result["output"] = context[key] = action.__call__(context=context,
-                                                              workflow_context=workflow_params,
-                                                              params=parsed_params)
+            output["output"] = context[key] = action(
+                context=context, workflow_context=workflow_params, params=parsed_params
+            )
         else:
-            if self.schema.workflows.get(step.action):
+            sub_workflow = self.schema.workflows.get(step.action)
+            if sub_workflow:
                 sub_flow_runner = FlowerRunner(self.schema, step.action, workflow_params)
-                result["output"] = context[key] = sub_flow_runner.run()
+                output["output"] = context[key] = sub_flow_runner.run()
 
-        return result
+        return output
