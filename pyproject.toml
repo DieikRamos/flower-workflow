@@ -15,7 +15,22 @@ pyyaml = "^6.0"
 requests = "^2.31.0"
 fastapi = "^0.95.2"
 uvicorn = "^0.22.0"
+black = "^24.10.0"
+pre-commit = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+include = '\.pyi?$'
+line-length = 120
+target-version = ['py39']
+extend-exclude = '''
+/(
+  # ignore some directories and files
+  | .git
+  | venv
+)/
+'''
+
