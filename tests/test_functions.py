@@ -106,6 +106,12 @@ def test_parse_params_fallback_on_bad_expression():
     assert result["out"] == "default"
 
 
+def test_parse_params_raises_on_bad_expression_without_fallback():
+    """Without fallback_value, a broken expression must propagate, not be swallowed."""
+    with pytest.raises(Exception):
+        parse_params({"out": 'params["nonexistent_key"]'}, context={}, params={})
+
+
 def test_parse_params_nested_dict():
     result = parse_params(
         {"nested": {"a": '1 + 1', "b": '"hello"'}},

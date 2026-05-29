@@ -36,11 +36,14 @@ def parse_params(action_params: dict, context: dict, params: dict):
         if isinstance(value, dict) and "expression" not in value:
             parsed_params[key] = parse_params(value, context, params)
         else:
+            expression = value.get("expression") if isinstance(value, dict) else value
+            has_fallback = isinstance(value, dict) and "fallback_value" in value
             try:
-                expression = value.get("expression") if isinstance(value, dict) else value
                 parsed_params[key] = eval_param(expression, params, context)
-            except Exception as _:
-                parsed_params[key] = value.get("fallback_value") if isinstance(value, dict) else value
+            except Exception:
+                if not has_fallback:
+                    raise
+                parsed_params[key] = value["fallback_value"]
 
     return parsed_params
 
