@@ -1,8 +1,11 @@
+import logging
 from dataclasses import dataclass, field
 from typing import Optional
 
 from flower import ActionProtocol
 from requests import request
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -25,7 +28,7 @@ class HttpRequest(ActionProtocol):
         request_params = RequestParams(**params)
 
         final_url = request_params.base_url + request_params.path.format(**request_params.path_params)
-        print("[BEGIN] Requesting URL: ", final_url)
+        logger.debug("Requesting %s", final_url)
 
         response = request(
             url=final_url,
@@ -35,7 +38,7 @@ class HttpRequest(ActionProtocol):
             json=request_params.payload,
         )
 
-        print("[END] Requesting URL: ", final_url)
+        logger.debug("Completed %s %s", request_params.method, final_url)
 
         response.raise_for_status()
 

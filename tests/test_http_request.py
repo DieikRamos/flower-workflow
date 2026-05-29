@@ -100,6 +100,24 @@ def test_returns_parsed_json():
 # RequestParams defaults
 # ---------------------------------------------------------------------------
 
+def test_request_logs_at_debug_not_print(capsys):
+    """HTTP requests must use logging (not print) so callers can control verbosity."""
+    import logging
+
+    action = HttpRequest()
+    resp = make_response({"ok": True}, content=b'{"ok":true}')
+
+    with patch("flower.actions.http_request.request", return_value=resp):
+        action(
+            context={"base_url": "https://api.example.com"},
+            workflow_context={},
+            params={"path": "/test", "method": "GET"},
+        )
+
+    captured = capsys.readouterr()
+    assert captured.out == "", "HttpRequest must not write to stdout"
+
+
 def test_request_params_optional_fields_default_to_empty():
     rp = RequestParams(base_url="https://x.com", path="/", method="GET")
     assert rp.headers == {}
