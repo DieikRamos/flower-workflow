@@ -1,124 +1,176 @@
-Here's a README for the Flower project based on the provided code:
-
 # Flower
 
-Flower is a flexible and extensible workflow execution engine that allows you to define and run complex workflows using YAML schemas and Python actions.
+Flower is a lightweight Python workflow engine for defining data-fetching and transformation flows in YAML, then running them with Python actions.
+
+It is useful when you want workflow definitions to stay declarative while keeping custom behavior in normal Python classes.
 
 ## Table of Contents
 
 - [Features](#features)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Core Components](#core-components)
+- [Quick Start](#quick-start)
+- [Workflow Schema](#workflow-schema)
 - [Built-in Actions](#built-in-actions)
-- [Extending Flower](#extending-flower)
-- [API Integration](#api-integration)
-- [Contributing](#contributing)
-- [License](#license)
+- [Custom Actions](#custom-actions)
+- [FastAPI Example](#fastapi-example)
+- [Development](#development)
+- [Project Review](#project-review)
+- [Core Components](#core-components)
 
 ## Features
 
-- Define workflows using YAML schemas
-- Execute workflows with dependencies between steps
-- Support for custom actions
-- Built-in HTTP request and mapping actions
-- Concurrent execution of independent steps
-- Dynamic parameter parsing and evaluation
-- FastAPI integration for exposing workflows as API endpoints
+- Define workflows with YAML files.
+- Merge multiple schema files into one runtime schema.
+- Execute steps with dependency ordering.
+- Run independent steps concurrently.
+- Reuse workflows as sub-workflows.
+- Use built-in HTTP request and mapping actions.
+- Add custom Python actions with a small callable protocol.
+- Expose workflows through FastAPI or any other Python interface.
 
 ## Installation
 
-To install Flower, you can use pip:
+This project uses Poetry for packaging.
 
 ```bash
-pip install flower-workflow-engine
+poetry install
 ```
 
-(Note: This is a placeholder. Adjust based on the actual package name and installation method.)
+If Poetry is not available, install the package in a virtual environment with your preferred Python packaging tool.
 
-## Usage
+## Quick Start
 
-Here's a basic example of how to use Flower:
+Create a workflow file:
+
+```yaml
+context:
+  base_url: "https://openlibrary.org"
+
+workflows:
+  get_author:
+    params:
+      author_key: str
+    steps:
+      request_author:
+        action: http_request
+        params:
+          method: "GET"
+          path: /authors/{author_key}.json
+          path_params:
+            author_key: params["author_key"]
+      output:
+        action: basic_mapping
+        depends: [request_author]
+        params:
+          key: context["request_author"].get("key")
+          name: context["request_author"].get("name")
+```
+
+Run it from Python:
 
 ```python
 from flower import Flower
 
-# Initialize Flower with your schema files
-flower = Flower(["path/to/your/schema.yaml"])
+flower = Flower(["workflows.yml"])
 
-# Run a workflow
-result = flower.run("your_workflow_name", {"param1": "value1", "param2": "value2"})
+result = flower.run("get_author", {"author_key": "OL23919A"})
+print(result)
 ```
 
-## Core Components
+## Workflow Schema
 
-### Flower
+Schemas are YAML documents with two important top-level sections:
 
-The main class that initializes the workflow engine with schema files and custom actions.
+- `context`: shared values available to all steps.
+- `workflows`: named workflows that define params and steps.
 
-### FlowerRunner
+Each step defines an `action`, optional `depends`, and `params`.
 
-Responsible for executing workflows, managing step dependencies, and handling the execution context.
+```yaml
+steps:
+  step_name:
+    action: basic_mapping
+    depends: [another_step]
+    params:
+      message: params["message"]
+```
 
-### Schema
-
-Represents the structure of your workflows, including context, actions, and workflow definitions.
-
-### ActionProtocol
-
-A protocol that defines the interface for custom actions.
+Parameter expressions are evaluated with `params` and `context` in scope. Because expressions are evaluated as Python, workflow files should be treated as trusted input.
 
 ## Built-in Actions
 
-- **HttpRequest**: Performs HTTP requests with customizable parameters.
-- **BasicMapping**: A simple action for parameter mapping.
-- **ListMapping**: Performs mapping operations on lists with optional filtering.
+- `http_request`: calls an HTTP endpoint using `requests`.
+- `basic_mapping`: returns parsed params as a dictionary.
+- `list_mapping`: maps a list into a new list, with optional filtering.
 
-## Extending Flower
+## Custom Actions
 
-You can extend Flower by creating custom actions:
+Custom actions implement `ActionProtocol`.
 
-1. Create a class that implements the `ActionProtocol`.
-2. Define the `__call__` method with the signature `(self, context, workflow_context, params)`.
-3. Set the `should_parse_params` attribute to control parameter parsing behavior.
-4. Add your custom action when initializing Flower:
+```python
+from flower import ActionProtocol
+
+
+class PrintMessage(ActionProtocol):
+    should_parse_params = True
+
+    def __call__(self, context, workflow_context, params):
+        print(params["message"])
+        return params["message"]
+```
+
+Register custom actions when creating `Flower`:
 
 ```python
 from flower import Flower
-from your_module import YourCustomAction
 
 flower = Flower(
-    ["path/to/your/schema.yaml"],
-    actions={"your_custom_action": YourCustomAction()}
+    ["workflows.yml"],
+    actions={"print_message": PrintMessage()},
 )
 ```
 
-## Real World Example - API Integration
+## FastAPI Example
 
-Flower can be easily integrated with FastAPI to expose workflows as API endpoints:
+The `basic_usage` folder contains a FastAPI app that exposes a workflow as an endpoint.
 
-```python
-from fastapi import FastAPI, Header
-from flower import Flower
-
-app = FastAPI()
-flower = Flower(["path/to/your/schema.yaml"])
-
-@app.get("/your_endpoint/{param}")
-def call_workflow(param: str, authorization: str = Header(alias="Authorization")):
-    context = {"param": param, "authorization": authorization}
-    result = flower.run("your_workflow", context)
-    return result
+```bash
+cd basic_usage
+python basic_usage.py
 ```
 
-## Contributing
+Then call:
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+```bash
+curl -H "Authorization: demo" http://localhost:8080/author_summary/OL23919A
+```
 
-## License
+## Development
 
-[Specify the license here, e.g., MIT, Apache 2.0, etc.]
+Recommended local checks:
 
----
+```bash
+poetry install
+poetry run python -c "from flower import Flower; print(Flower)"
+poetry run black .
+poetry run pre-commit run --all-files
+```
 
-This README provides an overview of the Flower project, its main components, and basic usage instructions. It also includes information about the built-in actions, how to extend Flower with custom actions, and how to integrate it with FastAPI. You may want to expand on certain sections, add examples of schema files, or include more detailed API documentation depending on the intended audience and the complexity of your project.
+AI contributor guidance is available in `AGENTS.md` and `.github/copilot-instructions.md`.
+
+## Project Review
+
+Initial review notes:
+
+- Runtime dependency alignment was updated so `requests` is installed with the package, because `flower.actions.http_request` imports it directly.
+- Package metadata now points to the existing `readme.md` file.
+- Black's target version now matches the package's Python 3.10+ requirement.
+- There is no automated test suite yet. Runner behavior, parameter parsing, schema merging, and built-in actions are the highest-value areas to test next.
+- `eval` powers parameter expressions. That keeps workflows flexible, but schemas should be considered trusted code.
+
+## Core Components
+
+- `Flower`: public entry point that loads schemas and registers actions.
+- `FlowerRunner`: executes workflow steps and resolves dependencies.
+- `Schema`, `Workflow`, and `ActionCall`: dataclasses that model the workflow definition.
+- `ActionProtocol`: callable interface for built-in and custom actions.
