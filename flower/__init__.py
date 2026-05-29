@@ -15,7 +15,7 @@ class Flower:
     def __init__(self, schema_files: List[str], actions: dict[str, ActionProtocol] = None):
         schema_dict = load_schema(schema_files)
 
-        schema_dict["actions"] = default_actions
+        schema_dict["actions"] = {**default_actions}
 
         if actions:
             schema_dict["actions"].update(actions)
