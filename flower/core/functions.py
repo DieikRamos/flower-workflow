@@ -7,7 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 def load_schema(schema_files: List[str]):
     schema = dict()
     for schema_file in schema_files:
-        schema = merge_dicts(dict(schema), yaml.load(open(schema_file), Loader=yaml.FullLoader))
+        with open(schema_file) as f:
+            schema = merge_dicts(dict(schema), yaml.safe_load(f))
     return dict(schema)
 
 
