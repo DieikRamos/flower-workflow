@@ -15,7 +15,7 @@ workflows:
       author_books:
         action: get_books_by_author
         params:
-          field_id: params["author_key"]
+          author_key: params["author_key"]
           authorization: params["authorization"]
 
       map_books:
