@@ -4,7 +4,7 @@ context:
 workflows:
   get_author_by_key:
     params:
-      author_name: str
+      author_key: str
       authorization: str
     steps:
       http_request:
