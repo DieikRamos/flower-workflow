@@ -62,7 +62,7 @@ def test_step_result_available_in_context_for_dependent_step():
             "test_flow": {
                 "params": {},
                 "steps": {
-                    "first": {"action": "basic_mapping", "params": {"msg": "hello"}},
+                    "first": {"action": "basic_mapping", "params": {"msg": '"hello"'}},
                     "output": {
                         "action": "basic_mapping",
                         "depends": ["first"],
@@ -138,7 +138,7 @@ def test_step_depends_none_treated_same_as_empty_list():
     """Steps with no depends must execute in the first batch."""
     schema = make_schema(
         steps={
-            "output": ActionCall(action="basic_mapping", params={"ok": True}),
+            "output": ActionCall(action="basic_mapping", params={"ok": "True"}),
         }
     )
     runner = FlowerRunner(schema, "test_flow", {})

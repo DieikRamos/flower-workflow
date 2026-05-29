@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 from flower import ActionProtocol
 
@@ -7,12 +7,7 @@ from flower import ActionProtocol
 class ActionCall:
     action: str
     params: Dict[str, Any]
-    depends: Optional[List[str]]
-
-    def __init__(self, action: str, params: Dict[str, Any], depends: Optional[List[str]] = None):
-        self.action = action
-        self.params = params
-        self.depends = depends or []
+    depends: List[str] = field(default_factory=list)
 
 
 @dataclass

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from flower import ActionProtocol
@@ -10,28 +10,10 @@ class RequestParams:
     base_url: str
     path: str
     method: str
-    headers: Optional[dict]
-    query_params: Optional[dict]
-    path_params: Optional[dict]
-    payload: Optional[dict]
-
-    def __init__(
-        self,
-        base_url: str,
-        path: str,
-        method: str,
-        headers: Optional[dict] = None,
-        query_params: Optional[dict] = None,
-        path_params: Optional[dict] = None,
-        payload: Optional[dict] = None,
-    ):
-        self.base_url = base_url
-        self.path = path
-        self.method = method
-        self.headers = headers or {}
-        self.query_params = query_params or {}
-        self.path_params = path_params or {}
-        self.payload = payload or None
+    headers: dict = field(default_factory=dict)
+    query_params: dict = field(default_factory=dict)
+    path_params: dict = field(default_factory=dict)
+    payload: Optional[dict] = None
 
 
 class HttpRequest(ActionProtocol):
