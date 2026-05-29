@@ -38,7 +38,8 @@ class HttpRequest(ActionProtocol):
     should_parse_params = True
 
     def __call__(self, context, workflow_context, params):
-        params["base_url"] = context["base_url"]
+        if "base_url" not in params:
+            params["base_url"] = context.get("base_url", "")
         request_params = RequestParams(**params)
 
         final_url = request_params.base_url + request_params.path.format(**request_params.path_params)
